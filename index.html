@@ -28,7 +28,7 @@
 
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500;600&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500;600;700&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
     
     <style>
         body {
@@ -71,9 +71,9 @@
             z-index: 10000;
         }
 
-        /* --- ELEGANT PHRASE CARDS --- */
+        /* --- ELEGANT PHRASE CARDS (Upgraded Shadows) --- */
         .phrase-card {
-            background: white;
+            background: linear-gradient(145deg, #ffffff, #fff0f3);
             border-radius: 32px;
             aspect-ratio: 1 / 1.1;
             display: flex;
@@ -82,18 +82,21 @@
             justify-content: center;
             padding: 1.5rem;
             transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            border: 1px solid var(--goldBorder);
-            box-shadow: 0 10px 30px -10px rgba(255, 179, 193, 0.2);
             position: relative;
             overflow: hidden;
+            
+            /* Beautiful Soft-UI / Neumorphic Shadow */
+            box-shadow: 10px 10px 25px rgba(255, 179, 193, 0.4),
+                       -10px -10px 25px rgba(255, 255, 255, 0.9);
+            border: 2px solid #ffffff;
         }
 
         .phrase-card::after {
             content: '';
             position: absolute;
             inset: 0;
-            border-radius: 32px;
-            border: 1px solid transparent;
+            border-radius: 30px;
+            border: 2px solid transparent;
             background: linear-gradient(135deg, #ffb3c1, transparent) border-box;
             -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
             mask-composite: exclude;
@@ -102,20 +105,22 @@
         }
 
         .phrase-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px -15px rgba(255, 179, 193, 0.4);
+            transform: translateY(-8px) scale(1.02);
+            /* Deeper, warmer shadow on hover */
+            box-shadow: 15px 15px 30px rgba(255, 128, 150, 0.3),
+                       -12px -12px 30px rgba(255, 255, 255, 1);
         }
         
         .phrase-card:hover::after {
             opacity: 1;
         }
 
-        /* --- MODAL POPUP --- */
+        /* --- MODAL POPUP (Upgraded Shadows) --- */
         #modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(255, 245, 247, 0.85);
-            backdrop-filter: blur(15px);
+            background: rgba(255, 245, 247, 0.6);
+            backdrop-filter: blur(12px);
             z-index: 5000;
             display: none;
             align-items: center;
@@ -124,15 +129,18 @@
         }
 
         .modal-content {
-            background: white;
+            background: linear-gradient(145deg, #ffffff, #fff5f7);
             width: 100%;
             max-width: 480px;
             border-radius: 50px;
             padding: 4rem 2rem;
             text-align: center;
-            box-shadow: 0 40px 80px -20px rgba(255, 77, 109, 0.15);
-            border: 1px solid #ffedf0;
             position: relative;
+            
+            /* Lush floating shadow for the modal */
+            box-shadow: 20px 20px 60px rgba(255, 128, 150, 0.25),
+                       -20px -20px 60px rgba(255, 255, 255, 0.9);
+            border: 4px solid #ffffff;
         }
 
         .btn-reveal {
@@ -145,13 +153,13 @@
             font-size: 0.75rem;
             letter-spacing: 0.15em;
             transition: all 0.3s;
-            box-shadow: 0 8px 20px rgba(255, 77, 109, 0.3);
+            box-shadow: 0 8px 20px rgba(255, 77, 109, 0.3), inset 0 -3px 0 rgba(0,0,0,0.1);
         }
 
         .btn-reveal:hover {
             background: #ff758f;
             transform: scale(1.05) translateY(-2px);
-            box-shadow: 0 12px 25px rgba(255, 77, 109, 0.4);
+            box-shadow: 0 12px 25px rgba(255, 77, 109, 0.4), inset 0 -3px 0 rgba(0,0,0,0.1);
         }
 
         /* Animations */
@@ -177,27 +185,31 @@
         <div class="inline-block mb-6 floating">
             <i data-lucide="sparkles" class="text-deepRose w-6 h-6"></i>
         </div>
-        <h1 class="font-serif text-5xl md:text-6xl text-deepRose mb-3 italic">Sinta</h1>
-        <p class="font-sans font-medium text-petalPink tracking-[0.4em] uppercase text-[10px]">A Collection of Filipino Words for My Bunny</p>
+        <h1 class="font-serif text-5xl md:text-6xl text-deepRose mb-3 italic flex justify-center items-center gap-3">
+            Sinta <span class="text-3xl opacity-80">🌸</span>
+        </h1>
+        <p class="font-sans font-medium text-petalPink tracking-[0.4em] uppercase text-[10px]">A Collection of Filipino Love</p>
     </header>
 
     <main class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10 px-8 pb-32" id="phrase-grid">
-        </main>
+    </main>
 
     <div id="modal-overlay">
         <div class="modal-content" id="modal-card">
-            <button id="close-modal" class="absolute top-8 right-8 text-petalPink hover:text-deepRose transition-colors">
+            <div class="absolute -top-6 -left-6 text-6xl rotate-[-20deg] opacity-80 floating" style="animation-delay: -1s;">🐰</div>
+            
+            <button id="close-modal" class="absolute top-8 right-8 text-petalPink hover:text-deepRose transition-colors z-10">
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
             
-            <div id="modal-body">
-                <span class="text-[9px] uppercase tracking-[0.4em] text-petalPink mb-6 block font-bold">Tagalog Phrase</span>
+            <div id="modal-body" class="relative z-10">
+                <span class="text-[10px] uppercase tracking-[0.4em] text-petalPink mb-6 block font-bold">Tagalog Phrase</span>
                 <h2 id="modal-tl" class="font-serif italic text-4xl md:text-5xl text-deepRose mb-4 leading-tight"></h2>
-                <p id="modal-p" class="text-[10px] text-gray-400 font-medium tracking-[0.2em] mb-12"></p>
+                <p id="modal-p" class="text-[11px] text-gray-500 font-medium tracking-[0.2em] mb-12"></p>
                 
                 <div id="translation-area" class="opacity-0">
-                    <div class="w-16 h-[1px] bg-softPink mx-auto mb-10"></div>
-                    <span class="text-[9px] uppercase tracking-[0.4em] text-gray-400 mb-4 block">Meaning</span>
+                    <div class="w-16 h-[2px] bg-petalPink mx-auto mb-10 rounded-full"></div>
+                    <span class="text-[9px] uppercase tracking-[0.4em] text-gray-400 mb-4 block font-bold">Meaning</span>
                     <h3 id="modal-en" class="font-sans text-2xl text-gray-700 font-light"></h3>
                 </div>
 
@@ -265,6 +277,9 @@
             { tl: "Bituin", en: "Star", p: "/bi-tu-ín/" }
         ];
 
+        // Cute Elements Array to sprinkle around
+        const cuteIcons = ['🐰', '🌸', '🎀', '🧸', '🌷', '💕', '✨', '🍓'];
+
         const grid = document.getElementById('phrase-grid');
         const overlay = document.getElementById('modal-overlay');
         const revealBtn = document.getElementById('reveal-btn');
@@ -272,11 +287,18 @@
 
         // Populate Grid
         phrases.forEach((phrase) => {
+            const randomIcon = cuteIcons[Math.floor(Math.random() * cuteIcons.length)];
+            
             const el = document.createElement('div');
-            el.className = 'phrase-card cursor-none';
+            el.className = 'phrase-card cursor-none group';
             el.innerHTML = `
-                <span class="text-[8px] uppercase tracking-[0.3em] text-petalPink mb-3">Tagalog</span>
-                <h3 class="font-serif text-xl text-center text-gray-700 italic">${phrase.tl}</h3>
+                <div class="absolute -bottom-4 -right-2 text-6xl opacity-[0.06] transform -rotate-12 transition-all duration-500 ease-out 
+                            group-hover:scale-110 group-hover:rotate-0 group-hover:opacity-[0.25] group-hover:-translate-y-2 group-hover:-translate-x-2 pointer-events-none">
+                    ${randomIcon}
+                </div>
+                
+                <span class="text-[9px] font-bold uppercase tracking-[0.3em] text-petalPink mb-3 relative z-10 transition-colors duration-300 group-hover:text-heartPink">Tagalog</span>
+                <h3 class="font-serif text-xl text-center text-gray-700 italic relative z-10 transition-colors duration-300 group-hover:text-deepRose">${phrase.tl}</h3>
             `;
             el.addEventListener('click', () => openModal(phrase));
             grid.appendChild(el);
@@ -294,10 +316,10 @@
 
             anime({
                 targets: '#modal-card',
-                translateY: [40, 0],
+                translateY: [60, 0],
                 opacity: [0, 1],
                 duration: 800,
-                easing: 'easeOutQuart'
+                easing: 'easeOutElastic(1, .8)'
             });
         }
 
@@ -324,8 +346,9 @@
             anime({
                 targets: '#modal-card',
                 translateY: 20,
+                scale: 0.95,
                 opacity: 0,
-                duration: 400,
+                duration: 300,
                 easing: 'easeInQuart',
                 complete: () => overlay.style.display = 'none'
             });
@@ -397,7 +420,8 @@
                 targets: '.phrase-card',
                 scale: [0.9, 1],
                 opacity: [0, 1],
-                delay: anime.stagger(30),
+                translateY: [20, 0],
+                delay: anime.stagger(40),
                 duration: 1000,
                 easing: 'easeOutQuart'
             });
