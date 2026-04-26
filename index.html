@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SINTA | Tagalog Phrase Library</title>
+    <title>SINTA | 50+ Love Notes & Phrases</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
@@ -11,14 +11,15 @@
             theme: {
                 extend: {
                     colors: {
-                        dark: '#0a0a0a',
+                        softPink: '#fff0f3',
+                        deepPink: '#ff85a1',
+                        accentPink: '#fbb1bd',
                         heartRed: '#ff0000',
-                        deepRed: '#880000',
-                        gold: '#d4af37',
+                        cream: '#fffdf7',
                     },
                     fontFamily: {
                         serif: ['Playfair Display', 'serif'],
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['Quicksand', 'sans-serif'],
                     }
                 }
             }
@@ -27,18 +28,18 @@
 
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
     
     <style>
         body {
-            background-color: #0a0a0a;
-            color: #fcfcfc;
+            background-color: #fff0f3;
+            color: #4a4a4a;
             cursor: none !important;
             overflow-x: hidden;
             min-height: 100vh;
         }
 
-        /* --- RED HEART CURSOR SYSTEM --- */
+        /* --- VIBRANT RED HEART CURSOR --- */
         #cursor-main {
             position: fixed;
             top: 0;
@@ -49,7 +50,7 @@
             transform: translate(-50%, -50%) rotate(45deg);
             pointer-events: none;
             z-index: 10001;
-            box-shadow: 0 0 15px #ff0000;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
         }
         #cursor-main::before, #cursor-main::after {
             content: '';
@@ -70,147 +71,243 @@
             z-index: 10000;
         }
 
-        /* --- GRID & CARDS --- */
-        .phrase-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
+        /* --- DECORATIVE GRID --- */
+        .phrase-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px -5px rgba(255, 133, 161, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+        }
+        .phrase-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: #ff85a1;
         }
 
-        .card-container {
-            perspective: 1000px;
-            height: 220px;
-        }
-
-        .card-inner {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .card-container.is-flipped .card-inner {
-            transform: rotateY(180deg);
-        }
-
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            padding: 1.5rem;
-            text-align: center;
-            transition: border-color 0.3s;
-        }
-
-        .card-container:hover .card-face {
-            border-color: rgba(255, 0, 0, 0.4);
-        }
-
-        .card-back {
-            transform: rotateY(180deg);
-            background: rgba(255, 0, 0, 0.05);
-            border-color: rgba(255, 0, 0, 0.2);
-        }
-
-        /* Hide scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #0a0a0a; }
-        ::-webkit-scrollbar-thumb { background: #ff0000; }
-
-        #loader {
+        /* --- POPUP MODAL --- */
+        #modal-overlay {
             position: fixed;
             inset: 0;
-            background: #0a0a0a;
-            z-index: 20000;
-            display: flex;
-            justify-content: center;
+            background: rgba(255, 240, 243, 0.8);
+            backdrop-filter: blur(12px);
+            z-index: 5000;
+            display: none;
             align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 40px;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: 0 30px 60px -12px rgba(255, 133, 161, 0.3);
+            border: 4px solid #fff0f3;
+            position: relative;
+        }
+
+        /* --- BUTTONS --- */
+        .btn-reveal {
+            background: #ff85a1;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 99px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 133, 161, 0.4);
+        }
+        .btn-reveal:hover {
+            background: #ff0000;
+            transform: scale(1.05);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #fff0f3; }
+        ::-webkit-scrollbar-thumb { background: #fbb1bd; border-radius: 10px; }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
     </style>
 </head>
-<body class="font-sans">
+<body>
 
     <div id="cursor-main"></div>
     <canvas id="cursor-canvas"></canvas>
 
-    <div id="loader">
-        <div class="text-center">
-            <p class="font-serif italic text-heartRed tracking-[0.4em] uppercase text-[10px]">Preparing Your Phrases</p>
+    <header class="pt-20 pb-16 text-center px-6">
+        <div class="inline-block mb-4 floating">
+            <i data-lucide="heart" class="text-deepPink fill-deepPink w-8 h-8"></i>
+        </div>
+        <h1 class="font-serif text-5xl md:text-7xl text-deepPink mb-2">Sinta Notes</h1>
+        <p class="font-sans font-medium text-accentPink tracking-[0.3em] uppercase text-xs">A Library of 50+ Phrases for You</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-8 pb-32" id="phrase-grid">
+        </main>
+
+    <div id="modal-overlay">
+        <div class="modal-content" id="modal-card">
+            <button id="close-modal" class="absolute top-6 right-6 text-accentPink hover:text-heartRed transition-colors">
+                <i data-lucide="x-circle" class="w-8 h-8"></i>
+            </button>
+            
+            <div id="modal-body">
+                <span class="text-[10px] uppercase tracking-[0.4em] text-accentPink mb-6 block">English Phrase</span>
+                <h2 id="modal-en" class="font-serif text-4xl text-gray-800 mb-12 leading-tight"></h2>
+                
+                <div id="translation-area" class="opacity-0">
+                    <div class="w-12 h-[2px] bg-softPink mx-auto mb-8"></div>
+                    <span class="text-[10px] uppercase tracking-[0.4em] text-heartRed mb-4 block">Tagalog</span>
+                    <h3 id="modal-tl" class="font-serif italic text-4xl text-heartRed mb-2"></h3>
+                    <p id="modal-p" class="text-xs text-gray-400 font-medium tracking-widest"></p>
+                </div>
+
+                <div id="action-area" class="mt-12">
+                    <button id="reveal-btn" class="btn-reveal uppercase text-[10px]">Reveal Translation</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <header class="pt-20 pb-10 text-center px-6">
-        <h1 class="font-serif text-5xl md:text-6xl text-white mb-4">SINTA</h1>
-        <p class="text-[10px] uppercase tracking-[0.5em] text-heartRed font-semibold">The Tagalog Phrase Library</p>
-        <div class="w-12 h-[1px] bg-heartRed/40 mx-auto mt-8"></div>
-    </header>
-
-    <main class="phrase-grid" id="main-grid">
-        </main>
-
-    <footer class="py-20 text-center">
-        <p class="text-[9px] uppercase tracking-[0.4em] text-white/20">Click any card to reveal its translation.</p>
-    </footer>
-
     <script>
-        // Initialize Icons
         lucide.createIcons();
 
-        // --- PHRASE DATA ---
         const phrases = [
+            // Romance & Feelings
             { en: "I love you", tl: "Mahal kita", p: "/Ma-hal ki-ta/" },
             { en: "I miss you", tl: "Miss na kita", p: "/Miss na ki-ta/" },
-            { en: "Good morning", tl: "Magandang umaga", p: "/Ma-gan-dang u-ma-ga/" },
-            { en: "You are beautiful", tl: "Ang ganda mo", p: "/Ang gan-da mo/" },
-            { en: "Take care", tl: "Ingat ka", p: "/I-ngat ka/" },
             { en: "My love", tl: "Mahal ko", p: "/Ma-hal ko/" },
+            { en: "Always", tl: "Palagi", p: "/Pa-la-gi/" },
+            { en: "Forever", tl: "Magpakailanman", p: "/Mag-pa-ka-i-lan-man/" },
+            { en: "You're mine", tl: "Akin ka", p: "/A-kin ka/" },
+            { en: "Only you", tl: "Ikaw lang", p: "/I-kaw lang/" },
+            { en: "I like you", tl: "Gusto kita", p: "/Gus-to ki-ta/" },
+            { en: "You're beautiful", tl: "Maganda ka", p: "/Ma-gan-da ka/" },
+            { en: "You're handsome", tl: "Gwapo mo", p: "/Gwa-po mo/" },
+            { en: "My heart", tl: "Puso ko", p: "/Pu-so ko/" },
+            { en: "I'm yours", tl: "Iyo ako", p: "/I-yo a-ko/" },
+            { en: "You make me happy", tl: "Pinapasaya mo ako", p: "/Pi-na-pa-sa-ya mo a-ko/" },
+            { en: "Thinking of you", tl: "Iniisp kita", p: "/I-ni-i-sip ki-ta/" },
+            { en: "I'm happy with you", tl: "Masaya ako sa iyo", p: "/Ma-sa-ya a-ko sa i-yo/" },
+            { en: "Take care", tl: "Ingat ka", p: "/I-ngat ka/" },
+            { en: "I will wait for you", tl: "Hihintayin kita", p: "/Hi-hin-ta-yin ki-ta/" },
+            { en: "Smile", tl: "Ngiti ka naman", p: "/Ngi-ti ka na-man/" },
+            { en: "You are my everything", tl: "Ikaw ang lahat sa akin", p: "/I-kaw ang la-hat sa a-kin/" },
+            { en: "Hold my hand", tl: "Hawakan mo ang kamay ko", p: "/Ha-wa-kan mo ang ka-may ko/" },
+
+            // Greetings & Daily
+            { en: "Good morning", tl: "Magandang umaga", p: "/Ma-gan-dang u-ma-ga/" },
+            { en: "Good afternoon", tl: "Magandang hapon", p: "/Ma-gan-dang ha-pon/" },
+            { en: "Good evening", tl: "Magandang gabi", p: "/Ma-gan-dang ga-bi/" },
+            { en: "How are you?", tl: "Kumusta ka?", p: "/Ku-mus-ta ka/" },
+            { en: "I'm okay", tl: "Mabuti naman", p: "/Ma-bu-ti na-man/" },
             { en: "Thank you", tl: "Salamat", p: "/Sa-la-mat/" },
-            { en: "Let's eat", tl: "Kain na tayo", p: "/Ka-in na ta-yo/" },
-            { en: "I'm sorry", tl: "Pasensya na", p: "/Pa-sen-sya na/" },
-            { en: "Wait a moment", tl: "Sandali lang", p: "/San-da-li lang/" },
-            { en: "Understand?", tl: "Naintindihan mo?", p: "/Na-in-tin-di-han mo/" },
+            { en: "You're welcome", tl: "Walang anuman", p: "/Wa-lang a-nu-man/" },
             { en: "Yes", tl: "Oo", p: "/O-o/" },
             { en: "No", tl: "Hindi", p: "/Hin-di/" },
-            { en: "Good night", tl: "Magandang gabi", p: "/Ma-gan-dang ga-bi/" },
-            { en: "Always", tl: "Palagi", p: "/Pa-la-gi/" },
-            { en: "Forever", tl: "Magpakailanman", p: "/Mag-pa-ka-i-lan-man/" }
+            { en: "Maybe", tl: "Siguro", p: "/Si-gu-ro/" },
+            { en: "I don't know", tl: "Hindi ko alam", p: "/Hin-di ko a-lam/" },
+            { en: "Please", tl: "Paki-usap", p: "/Pa-ki u-sap/" },
+            { en: "I'm sorry", tl: "Pasensya na", p: "/Pa-sen-sya na/" },
+            { en: "Excuse me", tl: "Tabi po", p: "/Ta-bi po/" },
+            { en: "Let's go", tl: "Tara na", p: "/Ta-ra na/" },
+            { en: "Wait a moment", tl: "Sandali lang", p: "/San-da-li lang/" },
+            { en: "Hurry up", tl: "Dali na", p: "/Da-li na/" },
+            { en: "Understand?", tl: "Naintindihan mo?", p: "/Na-in-tin-di-han mo/" },
+            { en: "What is this?", tl: "Ano ito?", p: "/A-no i-to/" },
+            { en: "Where are you?", tl: "Nasaan ka?", p: "/Na-sa-an ka/" },
+
+            // Food & Home
+            { en: "Let's eat", tl: "Kain na tayo", p: "/Ka-in na ta-yo/" },
+            { en: "I'm hungry", tl: "Gutom na ako", p: "/Gu-tom na a-ko/" },
+            { en: "Delicious", tl: "Masarap", p: "/Ma-sa-rap/" },
+            { en: "Water", tl: "Tubig", p: "/Tu-big/" },
+            { en: "I'm full", tl: "Busog na ako", p: "/Bu-sog na a-ko/" },
+            { en: "I want this", tl: "Gusto ko nito", p: "/Gus-to ko ni-to/" },
+            { en: "Sleep now", tl: "Tulog na", p: "/Tu-log na/" },
+            { en: "I'm tired", tl: "Pagod ako", p: "/Pa-god a-ko/" },
+            { en: "Wash your hands", tl: "Maghugas ka ng kamay", p: "/Mag-hu-gas ka ng ka-may/" },
+            { en: "Home", tl: "Bahay", p: "/Ba-hay/" },
+            { en: "Let's go home", tl: "Uwi na tayo", p: "/U-wi na ta-yo/" },
+            { en: "Be quiet", tl: "Tahimik lang", p: "/Ta-hi-mik lang/" }
         ];
 
-        // --- POPULATE GRID ---
-        const grid = document.getElementById('main-grid');
-        phrases.forEach(phrase => {
-            const card = document.createElement('div');
-            card.className = 'card-container hover-target';
-            card.innerHTML = `
-                <div class="card-inner">
-                    <div class="card-face">
-                        <span class="text-[8px] uppercase tracking-widest text-white/30 mb-4">English</span>
-                        <h3 class="font-serif text-2xl text-white">${phrase.en}</h3>
-                    </div>
-                    <div class="card-face card-back">
-                        <span class="text-[8px] uppercase tracking-widest text-heartRed mb-4">Tagalog</span>
-                        <h3 class="font-serif text-2xl text-heartRed italic">${phrase.tl}</h3>
-                        <p class="text-[9px] text-white/40 mt-4 tracking-widest">${phrase.p}</p>
-                    </div>
-                </div>
+        const grid = document.getElementById('phrase-grid');
+        const overlay = document.getElementById('modal-overlay');
+        const revealBtn = document.getElementById('reveal-btn');
+        const translationArea = document.getElementById('translation-area');
+
+        // Populate Grid
+        phrases.forEach((phrase, index) => {
+            const el = document.createElement('div');
+            el.className = 'phrase-card p-10 flex flex-col items-center justify-center cursor-none';
+            el.innerHTML = `
+                <i data-lucide="mail" class="w-6 h-6 text-accentPink mb-4"></i>
+                <h3 class="font-serif text-xl text-center text-gray-700">${phrase.en}</h3>
             `;
-            card.addEventListener('click', () => {
-                card.classList.toggle('is-flipped');
+            el.addEventListener('click', () => openModal(phrase));
+            grid.appendChild(el);
+        });
+
+        function openModal(phrase) {
+            document.getElementById('modal-en').innerText = phrase.en;
+            document.getElementById('modal-tl').innerText = phrase.tl;
+            document.getElementById('modal-p').innerText = phrase.p;
+            
+            overlay.style.display = 'flex';
+            translationArea.style.opacity = '0';
+            revealBtn.style.display = 'inline-block';
+            revealBtn.style.opacity = '1';
+            revealBtn.style.transform = 'scale(1)';
+
+            anime({
+                targets: '#modal-card',
+                scale: [0.7, 1],
+                opacity: [0, 1],
+                duration: 800,
+                easing: 'easeOutElastic(1, .8)'
             });
-            grid.appendChild(card);
+        }
+
+        revealBtn.addEventListener('click', () => {
+            anime({
+                targets: revealBtn,
+                scale: 0,
+                opacity: 0,
+                duration: 400,
+                easing: 'easeInBack',
+                complete: () => {
+                    revealBtn.style.display = 'none';
+                    anime({
+                        targets: translationArea,
+                        opacity: 1,
+                        translateY: [20, 0],
+                        duration: 600,
+                        easing: 'easeOutQuart'
+                    });
+                }
+            });
+        });
+
+        document.getElementById('close-modal').addEventListener('click', () => {
+            anime({
+                targets: '#modal-card',
+                scale: 0.8,
+                opacity: 0,
+                duration: 400,
+                easing: 'easeInQuart',
+                complete: () => overlay.style.display = 'none'
+            });
         });
 
         // --- CURSOR SYSTEM ---
@@ -223,12 +320,8 @@
         window.addEventListener('mousemove', e => {
             mouse.x = e.clientX;
             mouse.y = e.clientY;
-            
-            // Move fixed heart
             cursorMain.style.left = mouse.x + 'px';
             cursorMain.style.top = mouse.y + 'px';
-
-            // Create falling particles
             spawnParticle();
         });
 
@@ -243,11 +336,10 @@
             particles.push({
                 x: mouse.x,
                 y: mouse.y,
-                size: Math.random() * 6 + 2,
+                size: Math.random() * 8 + 4,
                 speedX: (Math.random() - 0.5) * 2,
-                speedY: Math.random() * 3 + 1, // Positive Y = Falling
-                life: 1,
-                opacity: 0.6
+                speedY: Math.random() * 2 + 2, 
+                life: 1
             });
         }
 
@@ -268,38 +360,27 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (let i = 0; i < particles.length; i++) {
                 let p = particles[i];
-                drawHeart(p.x, p.y, p.size, p.life * p.opacity);
+                drawHeart(p.x, p.y, p.size, p.life * 0.5);
                 p.x += p.speedX;
-                p.y += p.speedY; // Falling effect
-                p.life -= 0.01;
+                p.y += p.speedY;
+                p.life -= 0.015;
                 if (p.life <= 0) particles.splice(i, 1);
             }
             requestAnimationFrame(animate);
         }
         animate();
 
-        // --- LOADER ---
+        // Entrance animation
         window.addEventListener('load', () => {
-            const loader = document.getElementById('loader');
             anime({
-                targets: loader,
-                opacity: 0,
-                duration: 1000,
-                easing: 'easeInOutQuad',
-                complete: () => loader.style.display = 'none'
-            });
-
-            // Entrance animation for grid
-            anime({
-                targets: '.card-container',
-                translateY: [30, 0],
+                targets: '.phrase-card',
+                translateY: [50, 0],
                 opacity: [0, 1],
-                delay: anime.stagger(100),
-                duration: 1000,
+                delay: anime.stagger(40),
+                duration: 1200,
                 easing: 'easeOutQuart'
             });
         });
-
     </script>
 </body>
 </html>
