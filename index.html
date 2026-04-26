@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SINTA | Tagalog for Couples</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rose: '#fff1f2',
+                        blush: '#fda4af',
+                        gold: '#d4af37',
+                        charcoal: '#1a1a1a',
+                        'glass-white': 'rgba(255, 255, 255, 0.15)',
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background: radial-gradient(circle at center, #2d1b1b 0%, #1a1a1a 100%);
+            color: #fcfcfc;
+            cursor: none !important;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Heart Cursor Canvas */
+        #cursor-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 10000;
+        }
+
+        /* 3D Flashcard Structure */
+        .card-container {
+            perspective: 1200px;
+            width: 320px;
+            height: 450px;
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease; /* Smooth hover tilt */
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 24px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: rgba(212, 175, 55, 0.05);
+            border-color: rgba(212, 175, 55, 0.6);
+        }
+
+        .gold-glow {
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Glass Controls */
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #d4af37;
+            transform: translateY(-2px);
+        }
+
+        /* Loader */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: #1a1a1a;
+            z-index: 20000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .turn-indicator {
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .active-turn {
+            color: #d4af37;
+            transform: scale(1.1);
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased">
+
+    <canvas id="cursor-canvas"></canvas>
+
+    <div id="loader">
+        <div class="text-center">
+            <div id="loader-heart" class="text-gold mb-4">
+                <i data-lucide="heart" class="w-12 h-12 animate-pulse"></i>
+            </div>
+            <p class="font-serif italic text-gold tracking-widest uppercase text-[10px]">Sinta Learning</p>
+        </div>
+    </div>
+
+    <nav class="fixed top-0 w-full p-8 flex justify-between items-start z-50">
+        <div class="flex flex-col">
+            <span class="font-serif text-2xl tracking-tighter text-white">SINTA.</span>
+            <span class="text-[8px] uppercase tracking-[0.4em] text-gold/60">Couples Tagalog</span>
+        </div>
+
+        <div class="flex gap-12 text-center">
+            <div id="player-1" class="turn-indicator active-turn">
+                <p class="text-[9px] uppercase tracking-widest mb-1">His Score</p>
+                <p class="font-serif text-3xl" id="score-1">0</p>
+            </div>
+            <div id="player-2" class="turn-indicator opacity-30">
+                <p class="text-[9px] uppercase tracking-widest mb-1">Her Score</p>
+                <p class="font-serif text-3xl" id="score-2">0</p>
+            </div>
+        </div>
+
+        <div class="text-right">
+            <p class="text-[9px] uppercase tracking-widest text-gold mb-1">Daily Streak</p>
+            <p class="font-serif text-xl italic text-white">12 Days</p>
+        </div>
+    </nav>
+
+    <main class="flex-1 flex flex-col items-center justify-center p-6 relative">
+        
+        <div id="turn-announcer" class="mb-12 opacity-0 transform translate-y-4">
+            <span class="px-6 py-2 rounded-full border border-gold/20 text-gold text-[10px] uppercase tracking-[0.3em] glass-btn">
+                It's <span id="current-player-name">Your</span> Turn
+            </span>
+        </div>
+
+        <div class="card-container hover-target" id="card-trigger">
+            <div class="card-inner" id="card-element">
+                <div class="card-face card-front gold-glow">
+                    <span class="absolute top-8 text-[9px] uppercase tracking-[0.5em] text-gold/40">English</span>
+                    <h2 class="font-serif text-4xl text-white leading-tight" id="front-text">I love you</h2>
+                    <div class="absolute bottom-12 flex gap-1 opacity-20">
+                        <i data-lucide="mouse-pointer-2" class="w-4 h-4"></i>
+                        <span class="text-[10px] uppercase tracking-widest">Tap to reveal</span>
+                    </div>
+                </div>
+                <div class="card-face card-back">
+                    <span class="absolute top-8 text-[9px] uppercase tracking-[0.5em] text-gold/80">Tagalog</span>
+                    <h2 class="font-serif text-4xl text-gold italic leading-tight mb-2" id="back-text">Mahal kita</h2>
+                    <p class="text-[10px] text-ivory/40 uppercase tracking-widest" id="pronunciation">/Ma-hal ki-ta/</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="card-controls" class="mt-16 flex gap-6 opacity-0 pointer-events-none transform translate-y-8">
+            <button onclick="handleFeedback(false)" class="glass-btn px-8 py-4 rounded-full text-[10px] uppercase tracking-[0.2em] text-white/60 hover-target">
+                Try Again
+            </button>
+            <button onclick="handleFeedback(true)" class="glass-btn px-8 py-4 rounded-full text-[10px] uppercase tracking-[0.2em] text-gold hover-target border-gold/40">
+                Got it!
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="p-8 text-center">
+        <p class="text-[9px] uppercase tracking-[0.4em] text-white/20">Master the language of the heart, one flip at a time.</p>
+    </footer>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // --- GAME STATE ---
+        const deck = [
+            { en: "I love you", tl: "Mahal kita", p: "/Ma-hal ki-ta/" },
+            { en: "Good morning", tl: "Magandang umaga", p: "/Ma-gan-dang u-ma-ga/" },
+            { en: "You are beautiful", tl: "Ang ganda mo", p: "/Ang gan-da mo/" },
+            { en: "I miss you", tl: "Miss na kita", p: "/Miss na ki-ta/" },
+            { en: "Let's eat", tl: "Kain na tayo", p: "/Ka-in na ta-yo/" },
+            { en: "Take care", tl: "Ingat ka", p: "/I-ngat ka/" }
+        ];
+
+        let currentIndex = 0;
+        let isFlipped = false;
+        let activePlayer = 1;
+        let scores = { 1: 0, 2: 0 };
+
+        // --- ELEMENTS ---
+        const cardInner = document.getElementById('card-element');
+        const cardTrigger = document.getElementById('card-trigger');
+        const controls = document.getElementById('card-controls');
+        const frontText = document.getElementById('front-text');
+        const backText = document.getElementById('back-text');
+        const pronunciation = document.getElementById('pronunciation');
+
+        // --- HEART CURSOR ---
+        const canvas = document.getElementById('cursor-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouse = { x: -100, y: -100 };
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        window.addEventListener('mousemove', e => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+            // Spawn particles on move
+            if (Math.random() > 0.7) spawnParticle();
+        });
+
+        function spawnParticle() {
+            particles.push({
+                x: mouse.x,
+                y: mouse.y,
+                size: Math.random() * 8 + 4,
+                speedX: (Math.random() - 0.5) * 2,
+                speedY: -Math.random() * 2 - 1,
+                life: 1,
+                rotation: Math.random() * Math.PI * 2
+            });
+        }
+
+        function drawHeart(x, y, size, opacity) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.bezierCurveTo(-size / 2, -size / 2, -size, size / 3, 0, size);
+            ctx.bezierCurveTo(size, size / 3, size / 2, -size / 2, 0, 0);
+            ctx.fillStyle = `rgba(212, 175, 55, ${opacity})`;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function animateCursor() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                drawHeart(p.x, p.y, p.size, p.life * 0.4);
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.life -= 0.01;
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // --- CARD INTERACTION ---
+        cardTrigger.addEventListener('click', () => {
+            if (isFlipped) return;
+            
+            isFlipped = true;
+            
+            // Anime.js Flip
+            anime({
+                targets: cardInner,
+                rotateY: 180,
+                duration: 1200,
+                easing: 'easeOutElastic(1, .8)',
+                begin: () => {
+                    cardTrigger.style.pointerEvents = 'none';
+                }
+            });
+
+            // Show Controls
+            anime({
+                targets: controls,
+                translateY: [20, 0],
+                opacity: 1,
+                delay: 400,
+                begin: () => controls.style.pointerEvents = 'auto'
+            });
+        });
+
+        function handleFeedback(correct) {
+            if (correct) {
+                scores[activePlayer]++;
+                updateScoreUI();
+                
+                // Success animation: Slide out
+                anime({
+                    targets: cardInner,
+                    translateX: 600,
+                    opacity: 0,
+                    duration: 800,
+                    easing: 'easeInExpo',
+                    complete: () => nextCard()
+                });
+            } else {
+                // Shake animation
+                anime({
+                    targets: cardInner,
+                    translateX: [0, -10, 10, -10, 10, 0],
+                    duration: 400,
+                    easing: 'linear',
+                    complete: () => {
+                        // Flip back
+                        isFlipped = false;
+                        anime({
+                            targets: cardInner,
+                            rotateY: 0,
+                            duration: 800,
+                            easing: 'easeOutQuart'
+                        });
+                        hideControls();
+                    }
+                });
+            }
+        }
+
+        function nextCard() {
+            currentIndex = (currentIndex + 1) % deck.length;
+            activePlayer = activePlayer === 1 ? 2 : 1;
+            
+            // Update Turn UI
+            document.querySelectorAll('.turn-indicator').forEach((el, idx) => {
+                el.classList.toggle('active-turn', idx + 1 === activePlayer);
+                el.classList.toggle('opacity-30', idx + 1 !== activePlayer);
+            });
+
+            // Set content
+            frontText.innerText = deck[currentIndex].en;
+            backText.innerText = deck[currentIndex].tl;
+            pronunciation.innerText = deck[currentIndex].p;
+
+            // Reset Card Position
+            isFlipped = false;
+            anime.set(cardInner, { translateX: 0, rotateY: 0, opacity: 1 });
+            hideControls();
+            
+            cardTrigger.style.pointerEvents = 'auto';
+            
+            // Pop entrance
+            anime({
+                targets: cardInner,
+                scale: [0.8, 1],
+                opacity: [0, 1],
+                duration: 1000,
+                easing: 'easeOutElastic(1, .6)'
+            });
+
+            // Update turn announcer
+            document.getElementById('current-player-name').innerText = activePlayer === 1 ? "His" : "Her";
+            anime({
+                targets: '#turn-announcer',
+                opacity: [0, 1],
+                translateY: [10, 0],
+                duration: 800
+            });
+        }
+
+        function hideControls() {
+            anime({
+                targets: controls,
+                opacity: 0,
+                translateY: 20,
+                duration: 300,
+                complete: () => controls.style.pointerEvents = 'none'
+            });
+        }
+
+        function updateScoreUI() {
+            const el = document.getElementById(`score-${activePlayer}`);
+            anime({
+                targets: el,
+                innerHTML: [scores[activePlayer]-1, scores[activePlayer]],
+                round: 1,
+                duration: 1000,
+                easing: 'easeOutExpo'
+            });
+        }
+
+        // --- LOADER & START ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            
+            anime.timeline()
+            .add({
+                targets: '#loader-heart',
+                scale: [1, 1.5, 1],
+                opacity: [1, 0.5, 1],
+                duration: 1000,
+                loop: 2
+            })
+            .add({
+                targets: loader,
+                opacity: 0,
+                duration: 1000,
+                easing: 'easeInOutQuad',
+                complete: () => {
+                    loader.style.display = 'none';
+                    // Reveal First Card
+                    nextCard();
+                }
+            });
+        });
+
+        // Magnetic Tilt for Card
+        cardTrigger.addEventListener('mousemove', (e) => {
+            if (isFlipped) return;
+            const rect = cardTrigger.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const xRotation = 15 * ((y - rect.height / 2) / rect.height);
+            const yRotation = -15 * ((x - rect.width / 2) / rect.width);
+            cardInner.style.transform = `rotateX(${xRotation}deg) rotateY(${yRotation}deg)`;
+        });
+
+        cardTrigger.addEventListener('mouseleave', () => {
+            if (isFlipped) return;
+            cardInner.style.transform = `rotateX(0deg) rotateY(0deg)`;
+        });
+
+    </script>
+</body>
+</html>
