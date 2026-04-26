@@ -204,7 +204,7 @@
             
             <div id="modal-body" class="relative z-10">
                 <span class="text-[10px] uppercase tracking-[0.4em] text-petalPink mb-6 block font-bold">Tagalog Phrase</span>
-                <h2 id="modal-tl" class="font-serif italic text-4xl md:text-5xl text-deepRose mb-4 leading-tight"></h2>
+                <h2 id="modal-tl" class="font-sans text-4xl md:text-5xl font-bold text-deepRose mb-4 leading-tight"></h2>
                 <p id="modal-p" class="text-[11px] text-gray-500 font-medium tracking-[0.2em] mb-12"></p>
                 
                 <div id="translation-area" class="opacity-0">
@@ -298,7 +298,7 @@
                 </div>
                 
                 <span class="text-[9px] font-bold uppercase tracking-[0.3em] text-petalPink mb-3 relative z-10 transition-colors duration-300 group-hover:text-heartPink">Tagalog</span>
-                <h3 class="font-serif text-xl text-center text-gray-700 italic relative z-10 transition-colors duration-300 group-hover:text-deepRose">${phrase.tl}</h3>
+                <h3 class="font-sans text-2xl font-bold text-center text-gray-700 relative z-10 transition-colors duration-300 group-hover:text-deepRose">${phrase.tl}</h3>
             `;
             el.addEventListener('click', () => openModal(phrase));
             grid.appendChild(el);
