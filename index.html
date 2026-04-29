@@ -73,7 +73,7 @@
 
         /* Disable custom cursor on mobile/touch devices for better usability */
         @media (hover: none) and (pointer: coarse) {
-            body, .phrase-card, input, ul, li { cursor: auto !important; }
+            body, .phrase-card, input, ul, li, .pagination-btn { cursor: auto !important; }
             #cursor-main, #cursor-canvas { display: none !important; }
         }
 
@@ -212,7 +212,10 @@
                        class="w-full py-3 md:py-4 pl-12 pr-6 bg-white/80 backdrop-blur-sm border-2 border-white rounded-full text-gray-700 placeholder-gray-400 focus:outline-none focus:border-petalPink shadow-[5px_5px_15px_rgba(255,179,193,0.3),-5px_-5px_15px_rgba(255,255,255,0.9)] transition-all cursor-none text-sm md:text-base">
             </div>
             <ul id="search-dropdown" class="absolute w-full mt-2 bg-white/95 backdrop-blur-md border-2 border-white rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden hidden max-h-48 md:max-h-60 overflow-y-auto z-50 text-left cursor-none">
-                </ul>
+            </ul>
+        </div>
+
+        <div id="pagination-controls" class="flex justify-center gap-2 mt-6 flex-wrap z-50 relative cursor-none">
         </div>
     </header>
 
@@ -330,6 +333,64 @@
         const translationArea = document.getElementById('translation-area');
         const searchInput = document.getElementById('search-input');
         const searchDropdown = document.getElementById('search-dropdown');
+        const paginationControls = document.getElementById('pagination-controls');
+
+        // Pagination State
+        let currentData = phrases;
+        let currentPage = 1;
+        const itemsPerPage = 20;
+
+        // Core View Updater
+        function updateView(animate = true) {
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const slicedData = currentData.slice(start, end);
+
+            renderGrid(slicedData);
+            renderPagination();
+
+            if (animate) {
+                anime({
+                    targets: '.phrase-card',
+                    scale: [0.9, 1],
+                    opacity: [0, 1],
+                    translateY: [20, 0],
+                    delay: anime.stagger(40),
+                    duration: 800,
+                    easing: 'easeOutQuart'
+                });
+            }
+        }
+
+        // Render Pagination Controls
+        function renderPagination() {
+            paginationControls.innerHTML = '';
+            const totalPages = Math.ceil(currentData.length / itemsPerPage);
+
+            // Hide pagination if only 1 page
+            if (totalPages <= 1) return;
+
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.innerText = i;
+                
+                // Add styling to match the theme
+                btn.className = `pagination-btn w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm md:text-base flex items-center justify-center transition-all duration-300 shadow-md cursor-none md:cursor-none border-2 border-white ${
+                    i === currentPage 
+                    ? 'bg-deepRose text-white transform scale-110 shadow-lg' 
+                    : 'bg-white/80 text-gray-500 hover:bg-petalPink hover:text-white hover:scale-105'
+                }`;
+
+                btn.addEventListener('click', () => {
+                    currentPage = i;
+                    updateView();
+                    // Smoothly scroll down to the grid
+                    document.getElementById('phrase-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+
+                paginationControls.appendChild(btn);
+            }
+        }
 
         // Render Grid Function
         function renderGrid(phrasesToRender) {
@@ -343,7 +404,6 @@
             phrasesToRender.forEach((phrase) => {
                 const randomIcon = cuteIcons[Math.floor(Math.random() * cuteIcons.length)];
                 const el = document.createElement('div');
-                // Added cursor-pointer for mobile users just in case
                 el.className = 'phrase-card cursor-none md:cursor-none group cursor-pointer';
                 el.innerHTML = `
                     <div class="absolute -bottom-4 -right-2 text-5xl md:text-6xl opacity-[0.06] transform -rotate-12 transition-all duration-500 ease-out 
@@ -378,7 +438,9 @@
             
             if (query.trim() === '') {
                 searchDropdown.classList.add('hidden');
-                renderGrid(phrases);
+                currentData = phrases;
+                currentPage = 1;
+                updateView(false); // Don't heavily re-animate while clearing input
                 return;
             }
 
@@ -395,7 +457,10 @@
                     li.addEventListener('click', () => {
                         searchInput.value = match.tl;
                         searchDropdown.classList.add('hidden');
-                        renderGrid([match]);
+                        
+                        currentData = [match];
+                        currentPage = 1;
+                        updateView();
                     });
                     
                     searchDropdown.appendChild(li);
@@ -408,19 +473,11 @@
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 searchDropdown.classList.add('hidden');
-                const matched = getFilteredPhrases(searchInput.value);
-                renderGrid(matched);
                 
-                anime({
-                    targets: '.phrase-card',
-                    scale: [0.9, 1],
-                    opacity: [0, 1],
-                    translateY: [20, 0],
-                    delay: anime.stagger(40),
-                    duration: 800,
-                    easing: 'easeOutQuart'
-                });
-                // Unfocus the keyboard on mobile
+                currentData = getFilteredPhrases(searchInput.value);
+                currentPage = 1;
+                updateView();
+                
                 searchInput.blur();
             }
         });
@@ -549,16 +606,7 @@
 
         // Render initially and animate
         window.addEventListener('load', () => {
-            renderGrid(phrases);
-            anime({
-                targets: '.phrase-card',
-                scale: [0.9, 1],
-                opacity: [0, 1],
-                translateY: [20, 0],
-                delay: anime.stagger(40),
-                duration: 1000,
-                easing: 'easeOutQuart'
-            });
+            updateView();
         });
     </script>
 </body>
