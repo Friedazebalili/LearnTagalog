@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SINTA | Elegant Tagalog Learning</title>
+    <title>Bunny |  Tagalog Learning </title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
@@ -71,31 +71,42 @@
             z-index: 10000;
         }
 
-        /* --- ELEGANT PHRASE CARDS (Upgraded Shadows) --- */
+        /* Disable custom cursor on mobile/touch devices for better usability */
+        @media (hover: none) and (pointer: coarse) {
+            body, .phrase-card, input, ul, li { cursor: auto !important; }
+            #cursor-main, #cursor-canvas { display: none !important; }
+        }
+
+        /* --- ELEGANT PHRASE CARDS --- */
         .phrase-card {
             background: linear-gradient(145deg, #ffffff, #fff0f3);
-            border-radius: 32px;
+            border-radius: 24px;
             aspect-ratio: 1 / 1.1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
+            padding: 1rem;
             transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             position: relative;
             overflow: hidden;
-            
-            /* Beautiful Soft-UI / Neumorphic Shadow */
             box-shadow: 10px 10px 25px rgba(255, 179, 193, 0.4),
                        -10px -10px 25px rgba(255, 255, 255, 0.9);
             border: 2px solid #ffffff;
+        }
+
+        @media (min-width: 768px) {
+            .phrase-card {
+                border-radius: 32px;
+                padding: 1.5rem;
+            }
         }
 
         .phrase-card::after {
             content: '';
             position: absolute;
             inset: 0;
-            border-radius: 30px;
+            border-radius: inherit;
             border: 2px solid transparent;
             background: linear-gradient(135deg, #ffb3c1, transparent) border-box;
             -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
@@ -106,7 +117,6 @@
 
         .phrase-card:hover {
             transform: translateY(-8px) scale(1.02);
-            /* Deeper, warmer shadow on hover */
             box-shadow: 15px 15px 30px rgba(255, 128, 150, 0.3),
                        -12px -12px 30px rgba(255, 255, 255, 1);
         }
@@ -115,7 +125,7 @@
             opacity: 1;
         }
 
-        /* --- MODAL POPUP (Upgraded Shadows) --- */
+        /* --- MODAL POPUP --- */
         #modal-overlay {
             position: fixed;
             inset: 0;
@@ -132,21 +142,26 @@
             background: linear-gradient(145deg, #ffffff, #fff5f7);
             width: 100%;
             max-width: 480px;
-            border-radius: 50px;
-            padding: 4rem 2rem;
+            border-radius: 40px;
+            padding: 3rem 1.5rem;
             text-align: center;
             position: relative;
-            
-            /* Lush floating shadow for the modal */
             box-shadow: 20px 20px 60px rgba(255, 128, 150, 0.25),
                        -20px -20px 60px rgba(255, 255, 255, 0.9);
             border: 4px solid #ffffff;
         }
 
+        @media (min-width: 768px) {
+            .modal-content {
+                border-radius: 50px;
+                padding: 4rem 2rem;
+            }
+        }
+
         .btn-reveal {
             background: #ff4d6d;
             color: white;
-            padding: 1.25rem 2.5rem;
+            padding: 1rem 2rem;
             border-radius: 99px;
             font-weight: 600;
             text-transform: uppercase;
@@ -181,39 +196,49 @@
     <div id="cursor-main"></div>
     <canvas id="cursor-canvas"></canvas>
 
-    <header class="pt-24 pb-12 text-center px-6">
-        <div class="inline-block mb-6 floating">
+    <header class="pt-16 md:pt-24 pb-8 md:pb-12 text-center px-6 relative z-40">
+        <div class="inline-block mb-4 md:mb-6 floating">
             <i data-lucide="sparkles" class="text-deepRose w-6 h-6"></i>
         </div>
-        <h1 class="font-serif text-5xl md:text-6xl text-deepRose mb-3 italic flex justify-center items-center gap-3">
-            Sinta <span class="text-3xl opacity-80">🌸</span>
+        <h1 class="font-serif text-4xl md:text-6xl text-deepRose mb-3 italic flex justify-center items-center gap-3">
+            Sinta <span class="text-2xl md:text-3xl opacity-80">🌸</span>
         </h1>
-        <p class="font-sans font-medium text-petalPink tracking-[0.4em] uppercase text-[10px]">A Collection of Tagalog word for my Bunny</p>
+        <p class="font-sans font-medium text-petalPink tracking-[0.2em] md:tracking-[0.4em] uppercase text-[9px] md:text-[10px]">A Collection of Tagalog words for my Bunny</p>
+
+        <div class="relative w-full max-w-md mx-auto mt-8 md:mt-10">
+            <div class="relative flex items-center">
+                <i data-lucide="search" class="absolute left-4 w-5 h-5 text-petalPink"></i>
+                <input type="text" id="search-input" placeholder="Search a word..." 
+                       class="w-full py-3 md:py-4 pl-12 pr-6 bg-white/80 backdrop-blur-sm border-2 border-white rounded-full text-gray-700 placeholder-gray-400 focus:outline-none focus:border-petalPink shadow-[5px_5px_15px_rgba(255,179,193,0.3),-5px_-5px_15px_rgba(255,255,255,0.9)] transition-all cursor-none text-sm md:text-base">
+            </div>
+            <ul id="search-dropdown" class="absolute w-full mt-2 bg-white/95 backdrop-blur-md border-2 border-white rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden hidden max-h-48 md:max-h-60 overflow-y-auto z-50 text-left cursor-none">
+                </ul>
+        </div>
     </header>
 
-    <main class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10 px-8 pb-32" id="phrase-grid">
+    <main class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-10 px-4 md:px-8 pb-32" id="phrase-grid">
     </main>
 
     <div id="modal-overlay">
         <div class="modal-content" id="modal-card">
-            <div class="absolute -top-6 -left-6 text-6xl rotate-[-20deg] opacity-80 floating" style="animation-delay: -1s;">🐰</div>
+            <div class="absolute -top-6 -left-6 text-5xl md:text-6xl rotate-[-20deg] opacity-80 floating" style="animation-delay: -1s;">🐰</div>
             
-            <button id="close-modal" class="absolute top-8 right-8 text-petalPink hover:text-deepRose transition-colors z-10">
+            <button id="close-modal" class="absolute top-6 right-6 text-petalPink hover:text-deepRose transition-colors z-10 p-2">
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
             
             <div id="modal-body" class="relative z-10">
-                <span class="text-[10px] uppercase tracking-[0.4em] text-petalPink mb-6 block font-bold">Tagalog Phrase</span>
-                <h2 id="modal-tl" class="font-sans text-4xl md:text-5xl font-bold text-deepRose mb-4 leading-tight"></h2>
-                <p id="modal-p" class="text-[11px] text-gray-500 font-medium tracking-[0.2em] mb-12"></p>
+                <span class="text-[9px] md:text-[10px] uppercase tracking-[0.4em] text-petalPink mb-4 md:mb-6 block font-bold">Tagalog Phrase</span>
+                <h2 id="modal-tl" class="font-sans text-3xl md:text-5xl font-bold text-deepRose mb-3 md:mb-4 leading-tight"></h2>
+                <p id="modal-p" class="text-[10px] md:text-[11px] text-gray-500 font-medium tracking-[0.2em] mb-8 md:mb-12"></p>
                 
                 <div id="translation-area" class="opacity-0">
-                    <div class="w-16 h-[2px] bg-petalPink mx-auto mb-10 rounded-full"></div>
-                    <span class="text-[9px] uppercase tracking-[0.4em] text-gray-400 mb-4 block font-bold">Meaning</span>
-                    <h3 id="modal-en" class="font-sans text-2xl text-gray-700 font-light"></h3>
+                    <div class="w-12 md:w-16 h-[2px] bg-petalPink mx-auto mb-6 md:mb-10 rounded-full"></div>
+                    <span class="text-[8px] md:text-[9px] uppercase tracking-[0.4em] text-gray-400 mb-3 md:mb-4 block font-bold">Meaning</span>
+                    <h3 id="modal-en" class="font-sans text-xl md:text-2xl text-gray-700 font-light"></h3>
                 </div>
 
-                <div id="action-area" class="mt-12">
+                <div id="action-area" class="mt-8 md:mt-12">
                     <button id="reveal-btn" class="btn-reveal">Reveal Meaning</button>
                 </div>
             </div>
@@ -282,33 +307,116 @@
             { tl: "Magkano?", en: "How much?", p: "/mag-ka-no /" }
         ];
 
-        // Cute Elements Array to sprinkle around
         const cuteIcons = ['🐰', '🌸', '🎀', '🧸', '🌷', '💕', '✨', '🍓'];
 
         const grid = document.getElementById('phrase-grid');
         const overlay = document.getElementById('modal-overlay');
         const revealBtn = document.getElementById('reveal-btn');
         const translationArea = document.getElementById('translation-area');
+        const searchInput = document.getElementById('search-input');
+        const searchDropdown = document.getElementById('search-dropdown');
 
-        // Populate Grid
-        phrases.forEach((phrase) => {
-            const randomIcon = cuteIcons[Math.floor(Math.random() * cuteIcons.length)];
+        // Render Grid Function
+        function renderGrid(phrasesToRender) {
+            grid.innerHTML = ''; 
             
-            const el = document.createElement('div');
-            el.className = 'phrase-card cursor-none group';
-            el.innerHTML = `
-                <div class="absolute -bottom-4 -right-2 text-6xl opacity-[0.06] transform -rotate-12 transition-all duration-500 ease-out 
-                            group-hover:scale-110 group-hover:rotate-0 group-hover:opacity-[0.25] group-hover:-translate-y-2 group-hover:-translate-x-2 pointer-events-none">
-                    ${randomIcon}
-                </div>
-                
-                <span class="text-[9px] font-bold uppercase tracking-[0.3em] text-petalPink mb-3 relative z-10 transition-colors duration-300 group-hover:text-heartPink">Tagalog</span>
-                <h3 class="font-sans text-2xl font-bold text-center text-gray-700 relative z-10 transition-colors duration-300 group-hover:text-deepRose">${phrase.tl}</h3>
-            `;
-            el.addEventListener('click', () => openModal(phrase));
-            grid.appendChild(el);
+            if (phrasesToRender.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center text-petalPink font-sans mt-10 tracking-widest text-sm uppercase">No words found. 🐰</div>`;
+                return;
+            }
+
+            phrasesToRender.forEach((phrase) => {
+                const randomIcon = cuteIcons[Math.floor(Math.random() * cuteIcons.length)];
+                const el = document.createElement('div');
+                // Added cursor-pointer for mobile users just in case
+                el.className = 'phrase-card cursor-none md:cursor-none group cursor-pointer';
+                el.innerHTML = `
+                    <div class="absolute -bottom-4 -right-2 text-5xl md:text-6xl opacity-[0.06] transform -rotate-12 transition-all duration-500 ease-out 
+                                group-hover:scale-110 group-hover:rotate-0 group-hover:opacity-[0.25] group-hover:-translate-y-2 group-hover:-translate-x-2 pointer-events-none">
+                        ${randomIcon}
+                    </div>
+                    
+                    <span class="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.3em] text-petalPink mb-2 md:mb-3 relative z-10 transition-colors duration-300 group-hover:text-heartPink">Tagalog</span>
+                    <h3 class="font-sans text-xl md:text-2xl font-bold text-center text-gray-700 relative z-10 transition-colors duration-300 group-hover:text-deepRose px-2">${phrase.tl}</h3>
+                `;
+                el.addEventListener('click', () => openModal(phrase));
+                grid.appendChild(el);
+            });
+            lucide.createIcons();
+        }
+
+        // Search Filter Logic
+        function getFilteredPhrases(query) {
+            const q = query.toLowerCase().trim();
+            if (!q) return phrases;
+            return phrases.filter(p => 
+                p.tl.toLowerCase().includes(q) || 
+                p.en.toLowerCase().includes(q)
+            );
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value;
+            const matched = getFilteredPhrases(query);
+            
+            searchDropdown.innerHTML = ''; 
+            
+            if (query.trim() === '') {
+                searchDropdown.classList.add('hidden');
+                renderGrid(phrases);
+                return;
+            }
+
+            if (matched.length > 0) {
+                searchDropdown.classList.remove('hidden');
+                matched.slice(0, 5).forEach(match => { 
+                    const li = document.createElement('li');
+                    li.className = 'px-4 md:px-6 py-3 md:py-4 hover:bg-softPink cursor-pointer md:cursor-none border-b border-gray-50 transition-colors flex flex-col md:flex-row justify-center md:justify-between items-start md:items-center gap-1';
+                    li.innerHTML = `
+                        <span class="font-bold text-deepRose text-sm md:text-base">${match.tl}</span> 
+                        <span class="text-[10px] md:text-xs text-gray-400 uppercase tracking-wider">${match.en}</span>
+                    `;
+                    
+                    li.addEventListener('click', () => {
+                        searchInput.value = match.tl;
+                        searchDropdown.classList.add('hidden');
+                        renderGrid([match]);
+                    });
+                    
+                    searchDropdown.appendChild(li);
+                });
+            } else {
+                searchDropdown.classList.add('hidden');
+            }
         });
 
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchDropdown.classList.add('hidden');
+                const matched = getFilteredPhrases(searchInput.value);
+                renderGrid(matched);
+                
+                anime({
+                    targets: '.phrase-card',
+                    scale: [0.9, 1],
+                    opacity: [0, 1],
+                    translateY: [20, 0],
+                    delay: anime.stagger(40),
+                    duration: 800,
+                    easing: 'easeOutQuart'
+                });
+                // Unfocus the keyboard on mobile
+                searchInput.blur();
+            }
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+                searchDropdown.classList.add('hidden');
+            }
+        });
+
+        // Modal Logic
         function openModal(phrase) {
             document.getElementById('modal-tl').innerText = phrase.tl;
             document.getElementById('modal-en').innerText = phrase.en;
@@ -365,62 +473,68 @@
         const ctx = canvas.getContext('2d');
         let particles = [];
         let mouse = { x: -100, y: -100 };
+        
+        // Detect if it's a touch device to stop drawing canvas hearts unnecessarily 
+        const isTouchDevice = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
-        window.addEventListener('mousemove', e => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-            cursorMain.style.left = mouse.x + 'px';
-            cursorMain.style.top = mouse.y + 'px';
-            spawnParticle();
-        });
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        function spawnParticle() {
-            particles.push({
-                x: mouse.x,
-                y: mouse.y,
-                size: Math.random() * 6 + 4,
-                speedX: (Math.random() - 0.5) * 1.5,
-                speedY: Math.random() * 2 + 1, 
-                life: 1
+        if (!isTouchDevice) {
+            window.addEventListener('mousemove', e => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+                cursorMain.style.left = mouse.x + 'px';
+                cursorMain.style.top = mouse.y + 'px';
+                spawnParticle();
             });
-        }
 
-        function drawHeart(x, y, size, opacity) {
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.rotate(Math.PI / 4);
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.bezierCurveTo(-size / 2, -size / 2, -size, size / 3, 0, size);
-            ctx.bezierCurveTo(size, size / 3, size / 2, -size / 2, 0, 0);
-            ctx.fillStyle = `rgba(255, 77, 109, ${opacity})`;
-            ctx.fill();
-            ctx.restore();
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particles.length; i++) {
-                let p = particles[i];
-                drawHeart(p.x, p.y, p.size, p.life * 0.4);
-                p.x += p.speedX;
-                p.y += p.speedY;
-                p.life -= 0.012;
-                if (p.life <= 0) particles.splice(i, 1);
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
             }
-            requestAnimationFrame(animate);
-        }
-        animate();
+            window.addEventListener('resize', resize);
+            resize();
 
-        // Reveal entrance
+            function spawnParticle() {
+                particles.push({
+                    x: mouse.x,
+                    y: mouse.y,
+                    size: Math.random() * 6 + 4,
+                    speedX: (Math.random() - 0.5) * 1.5,
+                    speedY: Math.random() * 2 + 1, 
+                    life: 1
+                });
+            }
+
+            function drawHeart(x, y, size, opacity) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(Math.PI / 4);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-size / 2, -size / 2, -size, size / 3, 0, size);
+                ctx.bezierCurveTo(size, size / 3, size / 2, -size / 2, 0, 0);
+                ctx.fillStyle = `rgba(255, 77, 109, ${opacity})`;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < particles.length; i++) {
+                    let p = particles[i];
+                    drawHeart(p.x, p.y, p.size, p.life * 0.4);
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    p.life -= 0.012;
+                    if (p.life <= 0) particles.splice(i, 1);
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // Render initially and animate
         window.addEventListener('load', () => {
+            renderGrid(phrases);
             anime({
                 targets: '.phrase-card',
                 scale: [0.9, 1],
