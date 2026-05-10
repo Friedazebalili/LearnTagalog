@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bunny |  Tagalog Learning </title>
+    <title>Bunny | Tagalog Learning</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
@@ -73,7 +73,7 @@
 
         /* Disable custom cursor on mobile/touch devices for better usability */
         @media (hover: none) and (pointer: coarse) {
-            body, .phrase-card, input, ul, li, .pagination-btn { cursor: auto !important; }
+            body, .phrase-card, input, ul, li, .pagination-btn, .filter-btn { cursor: auto !important; }
             #cursor-main, #cursor-canvas { display: none !important; }
         }
 
@@ -196,7 +196,7 @@
     <div id="cursor-main"></div>
     <canvas id="cursor-canvas"></canvas>
 
-    <header class="pt-16 md:pt-24 pb-8 md:pb-12 text-center px-6 relative z-40">
+    <header class="pt-16 md:pt-24 pb-4 md:pb-8 text-center px-6 relative z-40">
         <div class="inline-block mb-4 md:mb-6 floating">
             <i data-lucide="sparkles" class="text-deepRose w-6 h-6"></i>
         </div>
@@ -205,7 +205,13 @@
         </h1>
         <p class="font-sans font-medium text-petalPink tracking-[0.2em] md:tracking-[0.4em] uppercase text-[9px] md:text-[10px]">A Collection of Tagalog words for my Bunny</p>
 
-        <div class="relative w-full max-w-md mx-auto mt-8 md:mt-10">
+        <div class="flex justify-center gap-2 md:gap-4 mt-8 relative z-50 flex-wrap">
+            <button class="filter-btn bg-deepRose text-white px-5 py-2 rounded-full font-bold text-xs md:text-sm shadow-md transition-all hover:scale-105 cursor-none md:cursor-none border-2 border-white" data-filter="all">All Words 🌸</button>
+            <button class="filter-btn bg-white/80 text-gray-500 hover:bg-petalPink hover:text-white px-5 py-2 rounded-full font-bold text-xs md:text-sm shadow-md transition-all hover:scale-105 cursor-none md:cursor-none border-2 border-white" data-filter="basic">Phrases 🐰</button>
+            <button class="filter-btn bg-white/80 text-gray-500 hover:bg-petalPink hover:text-white px-5 py-2 rounded-full font-bold text-xs md:text-sm shadow-md transition-all hover:scale-105 cursor-none md:cursor-none border-2 border-white" data-filter="filler">Filler Words ✨</button>
+        </div>
+
+        <div class="relative w-full max-w-md mx-auto mt-6 md:mt-8">
             <div class="relative flex items-center">
                 <i data-lucide="search" class="absolute left-4 w-5 h-5 text-petalPink"></i>
                 <input type="text" id="search-input" placeholder="Search a word..." 
@@ -226,23 +232,24 @@
         <div class="modal-content" id="modal-card">
             <div class="absolute -top-6 -left-6 text-5xl md:text-6xl rotate-[-20deg] opacity-80 floating" style="animation-delay: -1s;">🐰</div>
             
-            <button id="close-modal" class="absolute top-6 right-6 text-petalPink hover:text-deepRose transition-colors z-10 p-2">
+            <button id="close-modal" class="absolute top-6 right-6 text-petalPink hover:text-deepRose transition-colors z-10 p-2 cursor-none md:cursor-none">
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
             
             <div id="modal-body" class="relative z-10">
-                <span class="text-[9px] md:text-[10px] uppercase tracking-[0.4em] text-petalPink mb-4 md:mb-6 block font-bold">Tagalog Phrase</span>
+                <span id="modal-category" class="text-[9px] md:text-[10px] uppercase tracking-[0.4em] text-petalPink mb-4 md:mb-6 block font-bold">Tagalog Phrase</span>
                 <h2 id="modal-tl" class="font-sans text-3xl md:text-5xl font-bold text-deepRose mb-3 md:mb-4 leading-tight"></h2>
                 <p id="modal-p" class="text-[10px] md:text-[11px] text-gray-500 font-medium tracking-[0.2em] mb-8 md:mb-12"></p>
                 
                 <div id="translation-area" class="opacity-0">
                     <div class="w-12 md:w-16 h-[2px] bg-petalPink mx-auto mb-6 md:mb-10 rounded-full"></div>
                     <span class="text-[8px] md:text-[9px] uppercase tracking-[0.4em] text-gray-400 mb-3 md:mb-4 block font-bold">Meaning</span>
-                    <h3 id="modal-en" class="font-sans text-xl md:text-2xl text-gray-700 font-light"></h3>
+                    <h3 id="modal-en" class="font-sans text-xl md:text-2xl text-gray-700 font-bold"></h3>
+                    <p id="modal-desc" class="text-xs md:text-sm text-gray-500 font-medium mt-4 max-w-[85%] mx-auto leading-relaxed italic hidden"></p>
                 </div>
 
                 <div id="action-area" class="mt-8 md:mt-12">
-                    <button id="reveal-btn" class="btn-reveal">Reveal Meaning</button>
+                    <button id="reveal-btn" class="btn-reveal cursor-none md:cursor-none">Reveal Meaning</button>
                 </div>
             </div>
         </div>
@@ -251,7 +258,8 @@
     <script>
         lucide.createIcons();
 
-        const phrases = [
+        // 1. Existing Phrases (Mapped to 'basic' category)
+        const originalPhrases = [
             { tl: "Mahal kita", en: "I love you", p: "/ma-hál ki-tá/" },
             { tl: "Sinta", en: "My love", p: "/sin-tá/" },
             { tl: "Miss na kita", en: "I miss you", p: "/miss na ki-tá/" },
@@ -323,7 +331,29 @@
             { tl: "Pasok", en: "Come in", p: "/pa-sók/" },
             { tl: "Labas", en: "Go out", p: "/la-bás/" },
             { tl: "Gusto ko", en: "I want", p: "/gus-tó ko/" }
+        ].map(p => ({ ...p, category: 'basic' }));
+
+        // 2. New Filler Words Collection
+        const fillerWords = [
+            { tl: "Po / Opo", en: "Respectful Marker / Yes", p: "/po/ / /o-po/", desc: "Added to sentences to show respect to elders, strangers, or someone you want to be polite to.", category: 'filler' },
+            { tl: "Na", en: "Now / Already", p: "/na/", desc: "Indicates that an action has been completed or a state has changed. (e.g., 'Tapos na' - Already finished).", category: 'filler' },
+            { tl: "Pa", en: "Still / Yet", p: "/pa/", desc: "Indicates continuation of an action or state. (e.g., 'Wala pa' - Not yet / Still nothing).", category: 'filler' },
+            { tl: "Naman", en: "Also / Too / Shift in focus", p: "/na-mán/", desc: "Used to shift the viewpoint, show contrast, or soften a request. (e.g., 'Ikaw naman' - How about you / Your turn).", category: 'filler' },
+            { tl: "Lang", en: "Only / Just", p: "/lang/", desc: "Limits the scope of something. (e.g., 'Konti lang' - Just a little).", category: 'filler' },
+            { tl: "Nga", en: "Indeed / Please", p: "/nga/", desc: "Used to emphasize a point, agree with someone, or soften a command. (e.g., 'Oo nga' - Yes, indeed).", category: 'filler' },
+            { tl: "Din / Rin", en: "Also / Too", p: "/din/ / /rin/", desc: "Means 'also' or 'too'. Use 'din' after consonants and 'rin' after vowels. (e.g., 'Ako rin' - Me too).", category: 'filler' },
+            { tl: "Daw / Raw", en: "They said / Allegedly", p: "/daw/ / /raw/", desc: "Used when quoting or relaying information from someone else. (e.g., 'Sabi daw' - They said).", category: 'filler' },
+            { tl: "Kasi", en: "Because", p: "/ka-sí/", desc: "Used to provide a reason or explanation, often placed at the end of a thought.", category: 'filler' },
+            { tl: "Kaya", en: "That's why / I wonder", p: "/ka-yá/", desc: "Used to explain a consequence or express a wondering thought. (e.g., 'Kaya pala' - So that's why).", category: 'filler' },
+            { tl: "Ba", en: "Question Marker", p: "/ba/", desc: "Added to turn a statement into a yes/no question. (e.g., 'Kumain ka na ba?' - Have you eaten?).", category: 'filler' },
+            { tl: "Yata", en: "Maybe / I think", p: "/ya-tá/", desc: "Expresses uncertainty or a guess. (e.g., 'Uulan yata' - I think it will rain).", category: 'filler' },
+            { tl: "Pala", en: "Oh, I see! / Realization", p: "/pa-lá/", desc: "Expresses a sudden realization or surprise. (e.g., 'Nandito ka pala' - Oh, you're here).", category: 'filler' },
+            { tl: "Eh", en: "(Expression)", p: "/eh/", desc: "A vocal filler used to emphasize reasoning, objection, or mild frustration.", category: 'filler' },
+            { tl: "Bale", en: "So / Basically", p: "/ba-le/", desc: "Used as a filler meaning 'so', 'as a result', or 'basically'.", category: 'filler' }
         ];
+
+        // Combine both lists
+        const allPhrases = [...originalPhrases, ...fillerWords];
 
         const cuteIcons = ['🐰', '🌸', '🎀', '🧸', '🌷', '💕', '✨', '🍓','🐻', '🐱', '🐶', '🐥', '🐣','💗', '💖', '💘', '💞', '💓','🌼', '🌻', '🌺', '💐','🍑', '🍒', '🍬', '🍭', '🧁', '🍰','☁️', '🌈', '⭐', '🌙','🫶', '🤍', '💌','🎈', '🎁','🩷', '💟','🐾', '🦋'];
 
@@ -335,10 +365,28 @@
         const searchDropdown = document.getElementById('search-dropdown');
         const paginationControls = document.getElementById('pagination-controls');
 
-        // Pagination State
-        let currentData = phrases;
+        // State variables
+        let activeFilter = 'all'; // 'all', 'basic', 'filler'
+        let currentData = allPhrases;
         let currentPage = 1;
         const itemsPerPage = 20;
+
+        // Filter Button Logic
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Style updates
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('bg-deepRose', 'text-white');
+                    b.classList.add('bg-white/80', 'text-gray-500');
+                });
+                e.target.classList.remove('bg-white/80', 'text-gray-500');
+                e.target.classList.add('bg-deepRose', 'text-white');
+
+                activeFilter = e.target.dataset.filter;
+                searchInput.value = ''; // Reset search when switching tabs
+                applyFilters();
+            });
+        });
 
         // Core View Updater
         function updateView(animate = true) {
@@ -367,14 +415,12 @@
             paginationControls.innerHTML = '';
             const totalPages = Math.ceil(currentData.length / itemsPerPage);
 
-            // Hide pagination if only 1 page
             if (totalPages <= 1) return;
 
             for (let i = 1; i <= totalPages; i++) {
                 const btn = document.createElement('button');
                 btn.innerText = i;
                 
-                // Add styling to match the theme
                 btn.className = `pagination-btn w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm md:text-base flex items-center justify-center transition-all duration-300 shadow-md cursor-none md:cursor-none border-2 border-white ${
                     i === currentPage 
                     ? 'bg-deepRose text-white transform scale-110 shadow-lg' 
@@ -384,7 +430,6 @@
                 btn.addEventListener('click', () => {
                     currentPage = i;
                     updateView();
-                    // Smoothly scroll down to the grid
                     document.getElementById('phrase-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
                 });
 
@@ -403,6 +448,8 @@
 
             phrasesToRender.forEach((phrase) => {
                 const randomIcon = cuteIcons[Math.floor(Math.random() * cuteIcons.length)];
+                const isFiller = phrase.category === 'filler';
+                
                 const el = document.createElement('div');
                 el.className = 'phrase-card cursor-none md:cursor-none group cursor-pointer';
                 el.innerHTML = `
@@ -411,7 +458,9 @@
                         ${randomIcon}
                     </div>
                     
-                    <span class="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.3em] text-petalPink mb-2 md:mb-3 relative z-10 transition-colors duration-300 group-hover:text-heartPink">Tagalog</span>
+                    <span class="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.3em] ${isFiller ? 'text-amber-400' : 'text-petalPink'} mb-2 md:mb-3 relative z-10 transition-colors duration-300 group-hover:text-heartPink">
+                        ${isFiller ? 'Filler Word' : 'Tagalog'}
+                    </span>
                     <h3 class="font-sans text-xl md:text-2xl font-bold text-center text-gray-700 relative z-10 transition-colors duration-300 group-hover:text-deepRose px-2">${phrase.tl}</h3>
                 `;
                 el.addEventListener('click', () => openModal(phrase));
@@ -420,29 +469,44 @@
             lucide.createIcons();
         }
 
-        // Search Filter Logic
-        function getFilteredPhrases(query) {
-            const q = query.toLowerCase().trim();
-            if (!q) return phrases;
-            return phrases.filter(p => 
-                p.tl.toLowerCase().includes(q) || 
-                p.en.toLowerCase().includes(q)
-            );
+        // Central Filter Logic
+        function applyFilters(query = '') {
+            let filtered = allPhrases;
+            
+            if (activeFilter !== 'all') {
+                filtered = filtered.filter(p => p.category === activeFilter);
+            }
+            
+            if (query.trim() !== '') {
+                const q = query.toLowerCase().trim();
+                filtered = filtered.filter(p => 
+                    p.tl.toLowerCase().includes(q) || 
+                    p.en.toLowerCase().includes(q)
+                );
+            }
+            
+            currentData = filtered;
+            currentPage = 1;
+            updateView(query.trim() === '' || searchDropdown.classList.contains('hidden'));
         }
 
+        // Search Events
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value;
-            const matched = getFilteredPhrases(query);
-            
             searchDropdown.innerHTML = ''; 
             
             if (query.trim() === '') {
                 searchDropdown.classList.add('hidden');
-                currentData = phrases;
-                currentPage = 1;
-                updateView(false); // Don't heavily re-animate while clearing input
+                applyFilters();
                 return;
             }
+
+            // Get matches based on current filter + query
+            let matched = allPhrases;
+            if (activeFilter !== 'all') {
+                matched = matched.filter(p => p.category === activeFilter);
+            }
+            matched = matched.filter(p => p.tl.toLowerCase().includes(query.toLowerCase()) || p.en.toLowerCase().includes(query.toLowerCase()));
 
             if (matched.length > 0) {
                 searchDropdown.classList.remove('hidden');
@@ -457,10 +521,7 @@
                     li.addEventListener('click', () => {
                         searchInput.value = match.tl;
                         searchDropdown.classList.add('hidden');
-                        
-                        currentData = [match];
-                        currentPage = 1;
-                        updateView();
+                        applyFilters(match.tl);
                     });
                     
                     searchDropdown.appendChild(li);
@@ -473,11 +534,7 @@
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 searchDropdown.classList.add('hidden');
-                
-                currentData = getFilteredPhrases(searchInput.value);
-                currentPage = 1;
-                updateView();
-                
+                applyFilters(searchInput.value);
                 searchInput.blur();
             }
         });
@@ -493,6 +550,16 @@
             document.getElementById('modal-tl').innerText = phrase.tl;
             document.getElementById('modal-en').innerText = phrase.en;
             document.getElementById('modal-p').innerText = phrase.p;
+            
+            document.getElementById('modal-category').innerText = phrase.category === 'filler' ? 'Filler Word' : 'Tagalog Phrase';
+            
+            const descEl = document.getElementById('modal-desc');
+            if (phrase.desc) {
+                descEl.innerText = `"${phrase.desc}"`;
+                descEl.classList.remove('hidden');
+            } else {
+                descEl.classList.add('hidden');
+            }
             
             overlay.style.display = 'flex';
             translationArea.style.opacity = '0';
@@ -546,7 +613,6 @@
         let particles = [];
         let mouse = { x: -100, y: -100 };
         
-        // Detect if it's a touch device to stop drawing canvas hearts unnecessarily 
         const isTouchDevice = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
         if (!isTouchDevice) {
@@ -606,7 +672,7 @@
 
         // Render initially and animate
         window.addEventListener('load', () => {
-            updateView();
+            applyFilters();
         });
     </script>
 </body>
